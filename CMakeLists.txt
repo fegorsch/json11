@@ -23,7 +23,10 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 add_library(json11 json11.cpp)
-target_include_directories(json11 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(json11 PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  
+    $<INSTALL_INTERFACE:.>
+)
 target_compile_options(json11
   PRIVATE -fPIC -fno-rtti -fno-exceptions -Wall)
 
@@ -52,6 +55,11 @@ if (JSON11_BUILD_TESTS)
   target_link_libraries(json11_test json11)
 endif()
 
-install(TARGETS json11 DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE})
+install(TARGETS json11 EXPORT json11Config DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/json11.hpp" DESTINATION include/${CMAKE_LIBRARY_ARCHITECTURE})
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/json11.pc" DESTINATION lib/${CMAKE_LIBRARY_ARCHITECTURE}/pkgconfig)
+install(EXPORT json11Config NAMESPACE json11:: DESTINATION cmake)
